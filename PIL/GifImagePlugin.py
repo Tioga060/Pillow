@@ -48,7 +48,7 @@ class GifImageFile(ImageFile.ImageFile):
     format = "GIF"
     format_description = "Compuserve GIF"
     _close_exclusive_fp_after_loading = False
-    
+
     global_palette = None
 
     def data(self):
@@ -180,6 +180,7 @@ class GifImageFile(ImageFile.ImageFile):
                     # graphic control extension
                     #
                     flags = i8(block[0])
+                    self.extensionHeader = flags
                     if flags & 1:
                         self.info["transparency"] = i8(block[3])
                     self.info["duration"] = i16(block[1:3]) * 10
@@ -307,7 +308,7 @@ def _normalize_mode(im, initial_call=False):
     UNDONE: What is the point of mucking with the initial call palette, for
     an image that shouldn't have a palette, or it would be a mode 'P' and
     get returned in the RAWMODE clause.
-    
+
     :param im: Image object
     :param initial_call: Default false, set to true for a single frame.
     :returns: Image object
@@ -334,7 +335,7 @@ def _normalize_palette(im, palette, info):
 
     :param im: Image object
     :param palette: bytes object containing the source palette, or ....
-    :param info: encoderinfo 
+    :param info: encoderinfo
     :returns: Image object
     """
     source_palette = None
@@ -347,7 +348,7 @@ def _normalize_palette(im, palette, info):
                                 zip(palette.palette[:256],
                                     palette.palette[256:512],
                                     palette.palette[512:768])))
-            
+
     if im.mode == "P":
         if not source_palette:
             source_palette = im.im.getpalette("RGB")[:768]
@@ -693,7 +694,7 @@ def _get_global_header(im, info):
         # size of global color table + global color table flag
         o8(color_table_size + 128),   # packed fields
         # background + reserved/aspect
-        o8(background) + o8(0), 
+        o8(background) + o8(0),
 
         # Global Color Table
         _get_header_palette(palette_bytes)
@@ -724,7 +725,7 @@ def getheader(im, palette=None, info=None):
 
     :param im: Image object
     :param palette: bytes object containing the source palette, or ....
-    :param info: encoderinfo 
+    :param info: encoderinfo
     :returns: tuple of(list of header items, optimized palette)
 
     """
