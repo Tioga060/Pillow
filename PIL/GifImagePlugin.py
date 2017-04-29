@@ -180,7 +180,7 @@ class GifImageFile(ImageFile.ImageFile):
                     # graphic control extension
                     #
                     flags = i8(block[0])
-                    self.extensionHeader = block
+                    self.extensionHeader = [b"\x21\xF9\x04",block[:4],b"\x00"]
                     if flags & 1:
                         self.info["transparency"] = i8(block[3])
                     self.info["duration"] = i16(block[1:3]) * 10
